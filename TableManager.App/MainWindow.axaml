@@ -1,0 +1,11 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="TableManager.App.MainWindow"
+        Title="TableManager"
+        Width="1200"
+        Height="800"
+        Background="#f9f9f9ff">
+
+    <ContentControl x:Name="MainContent"/>
+
+</Window>

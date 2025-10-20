@@ -1,0 +1,23 @@
+# Build
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+
+# IDE/Editor
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Avalonia & .NET
+*.log
+*.vs/
+*.csproj.user
+
+# macOS
+.DS_Store
+
+# Other
+Thumbs.db
