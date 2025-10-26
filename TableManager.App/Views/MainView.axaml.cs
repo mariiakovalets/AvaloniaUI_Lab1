@@ -4,32 +4,47 @@ using Avalonia.Platform.Storage;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 
 namespace TableManager.App.Views
 {
+    public class RecentFileItem
+    {
+        public string FileName { get; set; } = "";
+        public string FullPath { get; set; } = "";
+    }
+
     public partial class MainView : UserControl
     {
-        private readonly MainWindow _mainWindow;
-        public ObservableCollection<string> RecentFiles { get; set; }
+        private MainWindow? _mainWindow;
+        public ObservableCollection<RecentFileItem> RecentFiles { get; set; } 
 
-        public MainView(MainWindow mainWindow)
+        public MainView()
         {
             InitializeComponent();
+            RecentFiles = new ObservableCollection<RecentFileItem>(); 
+        }
+
+        public MainView(MainWindow mainWindow) : this()
+        {
             _mainWindow = mainWindow;
-            
-            RecentFiles = new ObservableCollection<string>();
             LoadRecentFiles();
-            RecentFilesList.ItemsSource = RecentFiles;
+            
+            var recentFilesList = this.FindControl<ListBox>("RecentFilesList");
+            if (recentFilesList != null)
+            {
+                recentFilesList.ItemsSource = RecentFiles;
+            }
         }
 
         private void CreateTable_Click(object? sender, RoutedEventArgs e)
         {
-            _mainWindow.NavigateToTable();
+            _mainWindow?.NavigateToTable();
         }
 
         private void Help_Click(object? sender, RoutedEventArgs e)
         {
-            _mainWindow.NavigateToHelp();
+            _mainWindow?.NavigateToHelp();
         }
 
         private async void OpenFile_Click(object? sender, RoutedEventArgs e)
@@ -51,21 +66,22 @@ namespace TableManager.App.Views
             {
                 var filePath = files[0].Path.LocalPath;
                 AddRecentFile(filePath);
-                _mainWindow.NavigateToTable(filePath);
+                _mainWindow?.NavigateToTable(filePath);
             }
         }
 
         private void RecentFile_Selected(object? sender, SelectionChangedEventArgs e)
         {
-            if (RecentFilesList.SelectedItem is string filePath)
+            var recentFilesList = this.FindControl<ListBox>("RecentFilesList");
+            if (recentFilesList?.SelectedItem is RecentFileItem fileItem) 
             {
-                if (File.Exists(filePath))
+                if (File.Exists(fileItem.FullPath))
                 {
-                    _mainWindow.NavigateToTable(filePath);
+                    _mainWindow?.NavigateToTable(fileItem.FullPath); 
                 }
                 else
                 {
-                    RecentFiles.Remove(filePath);
+                    RecentFiles.Remove(fileItem);
                     SaveRecentFiles();
                 }
             }
@@ -91,7 +107,13 @@ namespace TableManager.App.Views
                 foreach (var line in lines)
                 {
                     if (!string.IsNullOrWhiteSpace(line))
-                        RecentFiles.Add(line);
+                    {
+                        RecentFiles.Add(new RecentFileItem
+                        {
+                            FileName = Path.GetFileName(line),
+                            FullPath = line
+                        });
+                    }
                 }
             }
         }
@@ -106,15 +128,20 @@ namespace TableManager.App.Views
             Directory.CreateDirectory(appDataPath);
             
             var recentFilePath = Path.Combine(appDataPath, "recent.txt");
-            File.WriteAllLines(recentFilePath, RecentFiles);
+            File.WriteAllLines(recentFilePath, RecentFiles.Select(f => f.FullPath));
         }
 
         private void AddRecentFile(string filePath)
         {
-            if (RecentFiles.Contains(filePath))
-                RecentFiles.Remove(filePath);
+            var existing = RecentFiles.FirstOrDefault(f => f.FullPath == filePath);
+            if (existing != null)
+                RecentFiles.Remove(existing);
             
-            RecentFiles.Insert(0, filePath);
+            RecentFiles.Insert(0, new RecentFileItem
+            {
+                FileName = Path.GetFileName(filePath),
+                FullPath = filePath
+            });
             
             while (RecentFiles.Count > 10)
                 RecentFiles.RemoveAt(RecentFiles.Count - 1);

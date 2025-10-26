@@ -14,11 +14,6 @@
                        FontWeight="Bold"
                        Foreground="#065F46"
                        HorizontalAlignment="Center"/>
-            <TextBlock Text="Головна сторінка" 
-                       FontSize="24" 
-                       Foreground="#047857"
-                       HorizontalAlignment="Center"
-                       Margin="0,10,0,0"/>
         </StackPanel>
 
         <Grid Grid.Row="1" Margin="40,0,40,40">
@@ -32,14 +27,17 @@
                        VerticalAlignment="Center"
                        Margin="0,0,20,0">
                 
-                <Button Content="Відкрити файл"
+                <Button Content="Відкрити таблицю"
                         Width="480"
-                        Height="60"
+                        Height="70"
                         Background="#047857"
                         Foreground="White"
-                        FontSize="18"
+                        FontSize="22"
                         FontWeight="SemiBold"
                         Margin="0,0,0,30"
+                        CornerRadius="10"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
                         Click="OpenFile_Click">
                     <Button.Styles>
                         <Style Selector="Button:pointerover /template/ ContentPresenter">
@@ -50,12 +48,15 @@
                 
                 <Button Content="Створити нову таблицю"
                         Width="480"
-                        Height="60"
+                        Height="70"
                         Background="#047857"
                         Foreground="White"
-                        FontSize="18"
+                        FontSize="22"
                         FontWeight="SemiBold"
-                        Margin="0,0,0,20"
+                        Margin="0,0,0,30"
+                        CornerRadius="10"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
                         Click="CreateTable_Click">
                     <Button.Styles>
                         <Style Selector="Button:pointerover /template/ ContentPresenter">
@@ -66,11 +67,15 @@
                 
                 <Button Content="Довідка"
                         Width="480"
-                        Height="60"
+                        Height="70"
                         Background="#047857"
                         Foreground="White"
-                        FontSize="18"
+                        FontSize="22"
                         FontWeight="SemiBold"
+                        Margin="0,0,0,30"
+                        CornerRadius="10"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
                         Click="Help_Click">
                     <Button.Styles>
                         <Style Selector="Button:pointerover /template/ ContentPresenter">
@@ -95,18 +100,25 @@
                         </Grid.ColumnDefinitions>
                         
                         <TextBlock Grid.Column="0"
-                                  Text="Нещодавно відкриті файли" 
-                                  FontSize="20" 
+                                  Text="Нещодавно відкриті таблиці" 
+                                  FontSize="22" 
                                   Foreground="#1f2937"
                                   FontWeight="Bold"
                                   VerticalAlignment="Center"/>
                         <Button Grid.Column="1"
                                 Content="Очистити"
-                                Background="#ba1e1eff"
-                                Foreground="White"
+                                Background="White"
+                                Foreground="#1f2937"
+                                BorderBrush="#1f2937"
+                                BorderThickness="1"
                                 Padding="10,5"
                                 Click="ClearRecent_Click">
                             <Button.Styles>
+                                <Style Selector="Button:pointerover">
+                                    <Setter Property="Background" Value="#dc2626"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Setter Property="BorderBrush" Value="#dc2626"/>
+                                </Style>
                                 <Style Selector="Button:pointerover /template/ ContentPresenter">
                                     <Setter Property="Background" Value="#dc2626"/>
                                 </Style>
@@ -115,21 +127,22 @@
                     </Grid>
                     
                     <ListBox x:Name="RecentFilesList"
-                            Background="Transparent"
-                            MinHeight="300"
-                            SelectionChanged="RecentFile_Selected">
+                            SelectionChanged="RecentFile_Selected"
+                            Background="White"
+                            Margin="0,10,0,0"
+                            >
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Border Background="White" 
-                                       BorderBrush="#d1d5db"
-                                       BorderThickness="1"
-                                       CornerRadius="5"
-                                       Padding="15,10"
-                                       Margin="0,5">
-                                    <TextBlock Text="{Binding}" 
-                                              Foreground="#1f2937"
-                                              FontSize="16"/>
-                                </Border>
+                                <StackPanel Orientation="Vertical" Margin="5">
+                                    <TextBlock Text="{Binding FileName}" 
+                                            FontWeight="SemiBold"
+                                            FontSize="14"
+                                            Foreground="#1f2937"/>
+                                    <TextBlock Text="{Binding FullPath}" 
+                                            FontSize="11"
+                                            Foreground="#6b7280"
+                                            TextTrimming="CharacterEllipsis"/>
+                                </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
@@ -138,4 +151,6 @@
         </Grid>
 
     </Grid>
-</UserControl>
+</UserControl> 
+
+

@@ -5,17 +5,26 @@ namespace TableManager.App.Views
 {
     public partial class HelpView : UserControl
     {
-        private readonly MainWindow _mainWindow;
+        private MainWindow? _mainWindow; 
 
-        public HelpView(MainWindow mainWindow)
+        public HelpView()
         {
             InitializeComponent();
+        }
+
+        public HelpView(MainWindow mainWindow) : this() 
+        {
             _mainWindow = mainWindow;
         }
 
         private void BackToMain_Click(object? sender, RoutedEventArgs e)
         {
-            _mainWindow.NavigateToMain();
+            _mainWindow?.NavigateToMain();
+        }
+        
+        private void Back_Click(object? sender, RoutedEventArgs e)
+        {
+            _mainWindow?.NavigateBack();
         }
     }
 }

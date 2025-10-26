@@ -15,21 +15,28 @@
                        Foreground="#065F46"
                        HorizontalAlignment="Center"
                        Margin="0,0,0,20"/>
-            
-            <Button Content="⬅️ Головна сторінка"
-                    Width="200"
-                    Background="#047857"
-                    Foreground="White"
-                    FontWeight="SemiBold"
-                    HorizontalAlignment="Center"
-                    Click="BackToMain_Click">
-                <Button.Styles>
-                    <Style Selector="Button:pointerover /template/ ContentPresenter">
-                        <Setter Property="Background" Value="#047857"/>
-                    </Style>
-                </Button.Styles>
-            </Button>
-        </StackPanel>
+                <!-- НОВА КНОПКА НАЗАД -->
+    <Button Content="Назад" 
+            Width="200"
+            Background="Transparent" 
+            Foreground="#1f2937" 
+            FontSize="20"
+            BorderBrush="#1f2937"
+            BorderThickness="1"
+            CornerRadius="6"
+            Click="Back_Click">
+        <Button.Styles>
+            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                <Setter Property="Background" Value="#047857"/>
+            </Style>
+            <Style Selector="Button:pointerover">
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="BorderBrush" Value="#047857"/>
+            </Style>
+        </Button.Styles>
+    </Button>
+
+</StackPanel>
 
         <ScrollViewer Grid.Row="1">
             <StackPanel Margin="40,0,40,40" MaxWidth="1000">
@@ -77,7 +84,7 @@ TableManager - це програма для роботи з електронни
 <LineBreak/>
 - Константи - прості значення (числа, текст)
 <LineBreak/>
-- Формули - вирази, що починаються зі знаку = (наприклад, =1+2 або =A1+B2)
+- Формули - вирази, що починаються зі знаку = (наприклад, =1+2 або =(A1+B2))
 <LineBreak/><LineBreak/>
 <Bold>Правила запису формул:</Bold>
 <LineBreak/>
@@ -85,15 +92,15 @@ TableManager - це програма для роботи з електронни
 <LineBreak/>
 - Формули завжди починаються зі знаку =
 <LineBreak/>
-- Можна посилатися на інші клітинки (наприклад, =A1+B2)
+- Можна посилатися на інші клітинки (наприклад, =(A1+B2))
                         </TextBlock>
                     </StackPanel>
                 </Border>
 
                 <!-- Варіант 24 -->
-                <Border Background="#D1FAE5" 
-                        BorderBrush="#047857"
-                        BorderThickness="2"
+                <Border Background="#f3f4f6" 
+                        BorderBrush="#d1d5db"
+                        BorderThickness="1"
                         CornerRadius="10" 
                         Padding="30"
                         Margin="0,0,0,20">
@@ -101,12 +108,12 @@ TableManager - це програма для роботи з електронни
                         <TextBlock Text="Варіант № 24" 
                                    FontSize="24" 
                                    FontWeight="Bold"
-                                   Foreground="#065F46"
+                                   Foreground="#1f2937"
                                    Margin="0,0,0,15"/>
                         <TextBlock Text="Підтримувані операції та функції:"
                                    FontSize="18"
                                    FontWeight="SemiBold"
-                                   Foreground="#047857"
+                                   Foreground="#4b5563"
                                    Margin="0,0,0,10"/>
                     </StackPanel>
                 </Border>
@@ -128,13 +135,13 @@ TableManager - це програма для роботи з електронни
                                    Foreground="#4b5563"
                                    FontSize="16"
                                    LineHeight="24">
-<Bold>+</Bold> (додавання): =5+3 → 8
+<Bold>+</Bold> (додавання): =(5+3) = 8
 <LineBreak/>
-<Bold>-</Bold> (віднімання): =10-4 → 6
+<Bold>-</Bold> (віднімання): =(10-4) = 6
 <LineBreak/>
-<Bold>*</Bold> (множення): =6*7 → 42
+<Bold>*</Bold> (множення): =(6*7) = 42
 <LineBreak/>
-<Bold>/</Bold> (ділення): =20/4 → 5
+<Bold>/</Bold> (ділення): =(20/4) = 5
 <LineBreak/><LineBreak/>
 Приклад: =A1+B2*C3
                         </TextBlock>
@@ -158,11 +165,11 @@ TableManager - це програма для роботи з електронни
                                    Foreground="#4b5563"
                                    FontSize="16"
                                    LineHeight="24">
-<Bold>mod</Bold> (залишок від ділення): =7 mod 3 → 1
+<Bold>mod</Bold> (залишок від ділення): =(7 mod 3) = 1
 <LineBreak/>
-<Bold>div</Bold> (цілочисельне ділення): =7 div 3 → 2
+<Bold>div</Bold> (цілочисельне ділення): =(7 div 3) = 2
 <LineBreak/><LineBreak/>
-Перед та після mod/div ОБОВ'ЯЗКОВО потрібні пробіли!
+Перед та після mod/div потрібні пробіли!
                         </TextBlock>
                     </StackPanel>
                 </Border>
@@ -184,9 +191,9 @@ TableManager - це програма для роботи з електронни
                                    Foreground="#4b5563"
                                    FontSize="16"
                                    LineHeight="24">
-<Bold>inc(x)</Bold> - збільшує значення на 1: =inc(5) → 6
+<Bold>inc(x)</Bold> - збільшує значення на 1: =(inc(5)) = 6
 <LineBreak/>
-<Bold>dec(x)</Bold> - зменшує значення на 1: =dec(5) → 4
+<Bold>dec(x)</Bold> - зменшує значення на 1: =(dec(5)) = 4
 <LineBreak/><LineBreak/>
 Приклад: =inc(A1)
                         </TextBlock>
@@ -210,17 +217,17 @@ TableManager - це програма для роботи з електронни
                                    Foreground="#4b5563"
                                    FontSize="16"
                                    LineHeight="24">
-<Bold>=</Bold> (дорівнює): =5=5 → TRUE
+<Bold>=</Bold> (дорівнює): =(5=5) = TRUE
 <LineBreak/>
-<Bold>&lt;</Bold> (менше): =3&lt;5 → TRUE
+<Bold>&lt;</Bold> (менше): =(3&lt;5) = TRUE
 <LineBreak/>
-<Bold>></Bold> (більше): =7>5 → TRUE
+<Bold>></Bold> (більше): =(7>5) = TRUE
 <LineBreak/>
-<Bold>&lt;=</Bold> (менше або дорівнює): =3&lt;=5 → TRUE
+<Bold>&lt;=</Bold> (менше або дорівнює): =(3&lt;=5) = TRUE
 <LineBreak/>
-<Bold>>=</Bold> (більше або дорівнює): =5>=5 → TRUE
+<Bold>>=</Bold> (більше або дорівнює): =(5>=5) = TRUE
 <LineBreak/>
-<Bold>&lt;></Bold> (не дорівнює): =3&lt;>5 → TRUE
+<Bold>&lt;></Bold> (не дорівнює): =(3&lt;>5) = TRUE
 <LineBreak/><LineBreak/>
 Результат: TRUE або FALSE
                         </TextBlock>
@@ -247,7 +254,7 @@ TableManager - це програма для роботи з електронни
 <LineBreak/>
 <Bold>#ERROR</Bold> - синтаксична помилка у формулі
 <LineBreak/>
-<Bold>#CYCLE</Bold> - циклічне посилання (A1 посилається на B1, а B1 на A1)
+<Bold>#CYCLE</Bold> - циклічне посилання 
                         </TextBlock>
                     </StackPanel>
                 </Border>

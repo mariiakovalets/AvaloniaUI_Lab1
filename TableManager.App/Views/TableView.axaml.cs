@@ -1,20 +1,104 @@
-
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using Avalonia.Markup.Xaml;
+using Avalonia.Input;
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Linq;
 using TableManager.App.Controllers;
 
 namespace TableManager.App.Views
 {
-    public class CellViewModel
+    public class CellViewModel : INotifyPropertyChanged
     {
-        public string Value { get; set; } = "";
-        public string DisplayValue { get; set; } = "";
+        private string _value = "";
+        private string _displayValue = "";
+        private bool _hasError = false;
+        private string _errorMessage = "";
+        private bool _isFocused = false;
+
+        public string Value
+        {
+            get => _value;
+            set
+            {
+                if (_value != value)
+                {
+                    _value = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string DisplayValue
+        {
+            get => _displayValue;
+            set
+            {
+                if (_displayValue != value)
+                {
+                    _displayValue = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(DisplayText));
+                }
+            }
+        }
+
         public string CellName { get; set; } = "";
-        public bool HasError { get; set; } = false;
-        public string ErrorMessage { get; set; } = "";
+
+        public bool HasError
+        {
+            get => _hasError;
+            set
+            {
+                if (_hasError != value)
+                {
+                    _hasError = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set
+            {
+                if (_errorMessage != value)
+                {
+                    _errorMessage = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public bool IsFocused
+        {
+            get => _isFocused;
+            set
+            {
+                if (_isFocused != value)
+                {
+                    _isFocused = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(DisplayText));
+                }
+            }
+        }
+        public string DisplayText
+        {
+            get => IsFocused ? Value : (string.IsNullOrEmpty(DisplayValue) ? Value : DisplayValue);
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 
     public class RowViewModel
@@ -22,36 +106,128 @@ namespace TableManager.App.Views
         public string RowNumber { get; set; } = "";
         public ObservableCollection<CellViewModel> Cells { get; set; } = new();
     }
-
     public partial class TableView : UserControl
     {
-        private readonly MainWindow _mainWindow;
+        private MainWindow? _mainWindow;
+
         private string? _currentFilePath;
+
         public ObservableCollection<RowViewModel> TableRows { get; set; }
         public ObservableCollection<string> ColumnHeaders { get; set; }
+
         private Dictionary<string, CellViewModel> _cellMap = new();
 
-        public TableView(MainWindow mainWindow)
+        private HashSet<string> _changedCells = new();
+
+        private readonly UIController _uiController;
+        private readonly FileManager _fileManager;
+
+        public TableView()
         {
-            InitializeComponent();
-            _mainWindow = mainWindow;
+            AvaloniaXamlLoader.Load(this);
+
             TableRows = new ObservableCollection<RowViewModel>();
             ColumnHeaders = new ObservableCollection<string>();
+
+            _uiController = new UIController();
+            _fileManager = new FileManager();
+
             DataContext = this;
         }
 
-        public TableView(MainWindow mainWindow, string filePath) : this(mainWindow)
+        public void Initialize(MainWindow mainWindow, string? filePath = null)
         {
-            _currentFilePath = filePath;
-            LoadTableFromFile(filePath);
+            _mainWindow = mainWindow;
+
+            var createPanel = this.FindControl<StackPanel>("CreateTablePanel");
+            var editPanel = this.FindControl<StackPanel>("EditTablePanel");
+            var modePanel = this.FindControl<StackPanel>("ModePanel");
+
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                _currentFilePath = filePath;
+
+                var loaded = _fileManager.LoadTableFromFile(filePath, GetColumnName);
+
+                ColumnHeaders.Clear();
+                foreach (var h in loaded.headers)
+                    ColumnHeaders.Add(h);
+
+                TableRows.Clear();
+                foreach (var r in loaded.rows)
+                    TableRows.Add(r);
+
+                _cellMap = loaded.map;
+
+                _uiController.RecalculateAll(TableRows, _cellMap);
+
+                if (createPanel != null) createPanel.IsVisible = false;
+                if (editPanel != null) editPanel.IsVisible = true;
+                if (modePanel != null) modePanel.IsVisible = true;
+            }
+            else
+            {
+                if (createPanel != null) createPanel.IsVisible = true;
+                if (editPanel != null) editPanel.IsVisible = false;
+                if (modePanel != null) modePanel.IsVisible = false;
+            }
         }
 
         private void Home_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-            => _mainWindow.NavigateToMain();
+            => _mainWindow?.NavigateToMain();
 
         private void Help_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-            => _mainWindow.NavigateToHelp();
+            => _mainWindow?.NavigateToHelp();
 
+        private void CreateTable_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var rowsBox = this.FindControl<TextBox>("RowsBox");
+            var colsBox = this.FindControl<TextBox>("ColsBox");
+
+            if (rowsBox == null || colsBox == null) return;
+
+            if (int.TryParse(rowsBox.Text, out int rows) &&
+                int.TryParse(colsBox.Text, out int cols))
+            {
+                TableRows.Clear();
+                ColumnHeaders.Clear();
+                _cellMap.Clear();
+                _changedCells.Clear();
+
+                for (int j = 0; j < cols; j++)
+                {
+                    ColumnHeaders.Add(GetColumnName(j));
+                }
+
+                for (int i = 0; i < rows; i++)
+                {
+                    var rowVM = new RowViewModel { RowNumber = $"{i + 1}" };
+
+                    for (int j = 0; j < cols; j++)
+                    {
+                        string cellName = $"{GetColumnName(j)}{i + 1}";
+                        var cellVM = new CellViewModel
+                        {
+                            Value = "",
+                            DisplayValue = "",
+                            CellName = cellName
+                        };
+
+                        rowVM.Cells.Add(cellVM);
+                        _cellMap[cellName] = cellVM;
+                    }
+
+                    TableRows.Add(rowVM);
+                }
+                var createPanel = this.FindControl<StackPanel>("CreateTablePanel");
+                var editPanel = this.FindControl<StackPanel>("EditTablePanel");
+                var modePanel = this.FindControl<StackPanel>("ModePanel");
+
+                if (createPanel != null) createPanel.IsVisible = false;
+                if (editPanel != null) editPanel.IsVisible = true;
+                if (modePanel != null) modePanel.IsVisible = true;
+            }
+        }
         private async void Save_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             var topLevel = TopLevel.GetTopLevel(this);
@@ -70,155 +246,119 @@ namespace TableManager.App.Views
             if (file != null)
             {
                 _currentFilePath = file.Path.LocalPath;
-                await using var stream = await file.OpenWriteAsync();
-                using var writer = new StreamWriter(stream);
-                
-                foreach (var row in TableRows)
-                {
-                    var values = new List<string>();
-                    foreach (var cell in row.Cells)
-                    {
-                        values.Add(cell.Value);
-                    }
-                    writer.WriteLine(string.Join(",", values));
-                }
+                _fileManager.SaveTableToFile(_currentFilePath, TableRows);
             }
         }
-
-        private void CreateTable_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        private void DeleteTable_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            if (int.TryParse(RowsBox.Text, out int rows) && int.TryParse(ColsBox.Text, out int cols))
+            string? deletedFilePath = _currentFilePath;
+            _fileManager.DeleteFileIfExists(_currentFilePath);
+
+            TableRows.Clear();
+            ColumnHeaders.Clear();
+            _cellMap.Clear();
+
+            if (!string.IsNullOrEmpty(deletedFilePath))
             {
-                TableRows.Clear();
-                ColumnHeaders.Clear();
-                _cellMap.Clear();
-                
-                
-                for (int j = 0; j < cols; j++)
-                {
-                    ColumnHeaders.Add(GetColumnName(j));
-                }
-                
-       
-                for (int i = 0; i < rows; i++)
-                {
-                    var rowVM = new RowViewModel { RowNumber = $"{i + 1}" };
-                    
-                    for (int j = 0; j < cols; j++)
-                    {
-                        string cellName = $"{GetColumnName(j)}{i + 1}";
-                        var cellVM = new CellViewModel 
-                        { 
-                            Value = "",
-                            DisplayValue = "",
-                            CellName = cellName
-                        };
-                        
-                        rowVM.Cells.Add(cellVM);
-                        _cellMap[cellName] = cellVM;
-                    }
-                    
-                    TableRows.Add(rowVM);
-                }
+                _fileManager.RemoveFromRecentFiles(deletedFilePath);
+            }
 
-              
-                SubscribeToCellChanges();
+            _mainWindow?.NavigateToMain();
+        }
+
+        private void Cell_GotFocus(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (sender is TextBox textBox && textBox.Tag is CellViewModel cell)
+            {
+                cell.IsFocused = true;
             }
         }
 
-        private void SubscribeToCellChanges()
+        private void Cell_LostFocus(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
+            if (sender is TextBox textBox && textBox.Tag is CellViewModel cell)
+            {
+                cell.IsFocused = false;
+
+                string newValue = textBox.Text ?? "";
+                if (cell.Value != newValue)
+                {
+                    cell.Value = newValue;
+                    _changedCells.Add(cell.CellName);
+                }
+            }
+        }
+        private void Calculate_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            _uiController.RecalculateChanged(_changedCells, _cellMap);
+
             foreach (var row in TableRows)
-            {
                 foreach (var cell in row.Cells)
-                {
-                    
-                }
-            }
+                    cell.OnPropertyChanged(nameof(cell.DisplayText));
         }
-
-        public void CalculateCell(CellViewModel cell)
+        private void AddRow_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(cell.Value))
-            {
-                cell.DisplayValue = "";
-                cell.HasError = false;
-                cell.ErrorMessage = "";
-                return;
-            }
-
-       
-            if (!cell.Value.StartsWith("="))
-            {
-                cell.DisplayValue = cell.Value;
-                cell.HasError = false;
-                cell.ErrorMessage = "";
-                return;
-            }
-
-       
-            var syntaxCheck = Parser.CheckSyntax(cell.Value);
-            if (!syntaxCheck.isValid)
-            {
-                cell.DisplayValue = "#ERROR";
-                cell.HasError = true;
-                cell.ErrorMessage = syntaxCheck.error;
-                return;
-            }
-
-       
-            var allCells = new Dictionary<string, string>();
-            foreach (var kvp in _cellMap)
-            {
-                allCells[kvp.Key] = kvp.Value.Value;
-            }
-
-            if (Evaluator.DetectCycle(cell.CellName, allCells))
-            {
-                cell.DisplayValue = "#CYCLE";
-                cell.HasError = true;
-                cell.ErrorMessage = "Циклічне посилання";
-                return;
-            }
-
-      
-            var cellValues = new Dictionary<string, string>();
-            foreach (var kvp in _cellMap)
-            {
-                cellValues[kvp.Key] = kvp.Value.Value;
-            }
-
-            var result = Evaluator.Evaluate(cell.Value, cellValues);
-            
-            if (result.success)
-            {
-                // Для варіанту 24 - всі значення інтерпретуємо як логічні
-                bool logicalResult = result.result != 0;
-                cell.DisplayValue = logicalResult ? "TRUE" : "FALSE";
-                cell.HasError = false;
-                cell.ErrorMessage = "";
-            }
-            else
-            {
-                cell.DisplayValue = result.error.StartsWith("#") ? result.error : "#ERROR";
-                cell.HasError = true;
-                cell.ErrorMessage = result.error;
-            }
+            _uiController.AddRow(TableRows, ColumnHeaders, _cellMap, GetColumnName);
         }
 
-        // Перерахунок всіх клітинок
-        private void RecalculateAll()
+        private void DeleteRow_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            foreach (var row in TableRows)
-            {
-                foreach (var cell in row.Cells)
-                {
-                    CalculateCell(cell);
-                }
-            }
+            _uiController.DeleteLastRow(TableRows, _cellMap);
         }
 
-        // Метод для отримання назви стовпця (A, B, C, ..., Z, AA, AB, ...)
+        private void AddColumn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            _uiController.AddColumn(TableRows, ColumnHeaders, _cellMap, GetColumnName);
+        }
+
+        private void DeleteColumn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            _uiController.DeleteLastColumn(TableRows, ColumnHeaders, _cellMap);
+        }
+
+       /*  private void Clear_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            _uiController.ClearAll(TableRows);
+        } */
+
+        private void ShowExpressions_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            _uiController.ForceShowExpressions(TableRows);
+
+            var expressionsBtn = this.FindControl<Button>("ShowExpressionsButton");
+            var valuesBtn = this.FindControl<Button>("ShowValuesButton");
+
+            if (expressionsBtn != null)
+            {
+                expressionsBtn.Classes.Remove("mode-inactive");
+                expressionsBtn.Classes.Add("mode-active");
+            }
+
+            if (valuesBtn != null)
+            {
+                valuesBtn.Classes.Remove("mode-active");
+                valuesBtn.Classes.Add("mode-inactive");
+            }
+        }
+        private void ShowValues_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            _uiController.ForceShowValues(TableRows);
+
+            var expressionsBtn = this.FindControl<Button>("ShowExpressionsButton");
+            var valuesBtn = this.FindControl<Button>("ShowValuesButton");
+
+            if (valuesBtn != null)
+            {
+                valuesBtn.Classes.Remove("mode-inactive");
+                valuesBtn.Classes.Add("mode-active");
+            }
+
+            if (expressionsBtn != null)
+            {
+                expressionsBtn.Classes.Remove("mode-active");
+                expressionsBtn.Classes.Add("mode-inactive");
+            }
+        }
         private string GetColumnName(int index)
         {
             string columnName = "";
@@ -228,58 +368,6 @@ namespace TableManager.App.Views
                 index = (index / 26) - 1;
             }
             return columnName;
-        }
-
-private void Cell_LostFocus(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-{
-    if (sender is TextBox textBox && textBox.Tag is CellViewModel cell)
-    {
-        CalculateCell(cell);
-        RecalculateAll(); 
-    }
-}
-        private void LoadTableFromFile(string filePath)
-        {
-            if (File.Exists(filePath))
-            {
-                TableRows.Clear();
-                ColumnHeaders.Clear();
-                _cellMap.Clear();
-                
-                var lines = File.ReadAllLines(filePath);
-                
-                if (lines.Length > 0)
-                {
-                    var firstLine = lines[0].Split(',');
-                    for (int j = 0; j < firstLine.Length; j++)
-                    {
-                        ColumnHeaders.Add(GetColumnName(j));
-                    }
-                }
-                
-                for (int i = 0; i < lines.Length; i++)
-                {
-                    var values = lines[i].Split(',');
-                    var rowVM = new RowViewModel { RowNumber = $"{i + 1}" };
-                    
-                    for (int j = 0; j < values.Length; j++)
-                    {
-                        string cellName = $"{GetColumnName(j)}{i + 1}";
-                        var cellVM = new CellViewModel 
-                        { 
-                            Value = values[j],
-                            CellName = cellName
-                        };
-                        
-                        rowVM.Cells.Add(cellVM);
-                        _cellMap[cellName] = cellVM;
-                    }
-                    
-                    TableRows.Add(rowVM);
-                }
-
-                RecalculateAll();
-            }
         }
     }
 }

@@ -1,6 +1,20 @@
+
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="TableManager.App.Views.TableView">
+
+
+    <UserControl.Styles>
+        <Style Selector="Button.mode-active">
+            <Setter Property="Background" Value="#047857"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        
+        <Style Selector="Button.mode-inactive">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#1f2937"/>
+        </Style>
+    </UserControl.Styles>
 
     <Grid Background="White">
         <Grid.RowDefinitions>
@@ -9,95 +23,445 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" 
-                   Orientation="Horizontal" 
-                   HorizontalAlignment="Right" 
-                   Margin="20,20,20,0">
-            <Button Content="Головна сторінка"
-                    Width="140" 
-                    Background="#047857"
-                    Foreground="White"
-                    FontWeight="SemiBold"
-                    Margin="0,0,10,0"
-                    Click="Home_Click">
-                <Button.Styles>
-                    <Style Selector="Button:pointerover /template/ ContentPresenter">
-                        <Setter Property="Background" Value="#047857"/>
-                    </Style>
-                </Button.Styles>
-            </Button>
-            <Button Content="Довідка"
-                    Width="100" 
-                    Background="#047857"
-                    Foreground="White"
-                    FontWeight="SemiBold"
-                    Margin="0,0,10,0"
-                    Click="Help_Click">
-                <Button.Styles>
-                    <Style Selector="Button:pointerover /template/ ContentPresenter">
-                        <Setter Property="Background" Value="#047857"/>
-                    </Style>
-                </Button.Styles>
-            </Button>
-            <Button Content="Зберегти"
-                    Width="120" 
-                    Background="#047857"
-                    Foreground="White"
-                    FontWeight="SemiBold"
-                    Click="Save_Click">
-                <Button.Styles>
-                    <Style Selector="Button:pointerover /template/ ContentPresenter">
-                        <Setter Property="Background" Value="#047857"/>
-                    </Style>
-                </Button.Styles>
-            </Button>
+        <Grid Grid.Row="0" Margin="20,30,20,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Grid.Column="1"
+                      Text="TableManager" 
+                      FontSize="48" 
+                      FontWeight="Bold"
+                      Foreground="#065F46"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"/>
+            
+            <StackPanel Grid.Column="2"
+                       Orientation="Horizontal" 
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Center">
+                <Button Content="Головна сторінка" 
+                        Width="140"
+                        Height="35"
+                        Background="Transparent" 
+                        Foreground="#1f2937" 
+                        FontSize="14"
+                        BorderBrush="#1f2937"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Margin="0,0,10,0" 
+                        Click="Home_Click">
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover /template/ ContentPresenter">
+                            <Setter Property="Background" Value="#047857"/>
+                        </Style>
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="BorderBrush" Value="#047857"/>
+                        </Style>
+                    </Button.Styles>
+                </Button>
+                
+                <Button Content="Довідка" 
+                        Width="140"
+                        Height="35"
+                        Background="Transparent" 
+                        Foreground="#1f2937" 
+                        FontSize="14"
+                        BorderBrush="#1f2937"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Margin="0,0,10,0" 
+                        Click="Help_Click">
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover /template/ ContentPresenter">
+                            <Setter Property="Background" Value="#047857"/>
+                        </Style>
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="BorderBrush" Value="#047857"/>
+                        </Style>
+                    </Button.Styles>
+                </Button>
+                
+
+            </StackPanel>
+        </Grid>
+
+        <Border Grid.Row="1"
+                BorderBrush="#065F46"
+                BorderThickness="3"
+                CornerRadius="10"
+                Background="White"
+                Margin="20,20,20,30"
+                Padding="40,30"
+                HorizontalAlignment="Stretch">
+              
+            <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                       VerticalScrollBarVisibility="Disabled">
+
+            <StackPanel HorizontalAlignment="Center" 
+                       Spacing="35">  
+                
+                <StackPanel x:Name="CreateTablePanel"
+                           HorizontalAlignment="Left" 
+                           Spacing="20"
+                           VerticalAlignment="Center"
+                           IsVisible="True">
+                    <TextBlock Text="Введіть кількість рядків та стовпців:"
+                               Foreground="#065F46"
+                               FontSize="22"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Left"/>
+                    <StackPanel Orientation="Horizontal" 
+                                HorizontalAlignment="Left" 
+                                Spacing="20"
+                                VerticalAlignment="Center">
+                    <TextBlock Text="Рядки:" 
+                              Foreground="#1f2937" 
+                              FontSize="20"
+                              VerticalAlignment="Center"/>
+                    <TextBox x:Name="RowsBox" 
+                            Width="150" 
+                            Height="50"
+                            Text="5"
+                            FontSize="22"
+                            Foreground="#1f2937"
+                            Background="#ECFDF5"
+                            BorderBrush="#047857"
+                            BorderThickness="2"
+                            CornerRadius="5"
+                            VerticalAlignment="Center"
+                            TextAlignment="Center">
+                        <TextBox.Styles>
+                            <Style Selector="TextBox:pointerover /template/ Border">
+                                <Setter Property="Background" Value="#ECFDF5"/>
+                            </Style>
+                            <Style Selector="TextBox:focus /template/ Border">
+                                <Setter Property="Background" Value="#D1FAE5"/>
+                                <Setter Property="BorderBrush" Value="#047857"/>
+                                <Setter Property="BorderThickness" Value="2"/>
+                            </Style>
+                        </TextBox.Styles>
+                    </TextBox>
+                            
+                    <TextBlock Text="Стовпці:" 
+                              Foreground="#1f2937" 
+                              FontSize="20"
+                              VerticalAlignment="Center"
+                              Margin="30,0,0,0"/>
+                    <TextBox x:Name="ColsBox" 
+                            Width="150" 
+                            Height="50"
+                            Text="5"
+                            FontSize="22"
+                            Foreground="#1f2937"
+                            Background="#ECFDF5"
+                            BorderBrush="#047857"
+                            BorderThickness="2"
+                            CornerRadius="5"
+                            VerticalAlignment="Center"
+                            TextAlignment="Center">
+                        <TextBox.Styles>
+                            <Style Selector="TextBox:pointerover /template/ Border">
+                                <Setter Property="Background" Value="#ECFDF5"/>
+                            </Style>
+                            <Style Selector="TextBox:focus /template/ Border">
+                                <Setter Property="Background" Value="#D1FAE5"/>
+                                <Setter Property="BorderBrush" Value="#047857"/>
+                                <Setter Property="BorderThickness" Value="2"/>
+                            </Style>
+                        </TextBox.Styles>
+                    </TextBox>
+                            
+                    <Button Content="Створити таблицю" 
+                            Background="White"  
+                            Foreground="#1f2937" 
+                            FontSize="22"  
+                            BorderBrush="#065F46"
+                            BorderThickness="2"
+                            Width="280"  
+                            Height="50"  
+                            Margin="40,0,0,0" 
+                            CornerRadius="10"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Click="CreateTable_Click">
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover">
+                                <Setter Property="Background" Value="#047857"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="BorderBrush" Value="#047857"/>
+                            </Style>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                <Setter Property="Background" Value="#047857"/>
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+
+                <StackPanel x:Name="EditTablePanel"
+                           Orientation="Horizontal" 
+                           HorizontalAlignment="Left" 
+                           Spacing="12"
+                           IsVisible="False">
+
+                    <Button Content="Додати рядок" 
+                            Background="White" 
+                            Foreground="#1f2937" 
+                            FontSize="16"
+                            BorderBrush="#1f2937"
+                            BorderThickness="1"
+                            Width="165"
+                            Height="45"
+                            CornerRadius="8"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Click="AddRow_Click">
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover">
+                                <Setter Property="Background" Value="#047857"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="BorderBrush" Value="#047857"/>
+                            </Style>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                <Setter Property="Background" Value="#047857"/>
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+                    
+                    <Button Content="Видалити рядок" 
+                            Background="White" 
+                            Foreground="#1f2937" 
+                            FontSize="16"
+                            BorderBrush="#1f2937"
+                            BorderThickness="1"
+                            Width="165"
+                            Height="45"
+                            CornerRadius="8"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Click="DeleteRow_Click">
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover">
+                                <Setter Property="Background" Value="#047857"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="BorderBrush" Value="#047857"/>
+                            </Style>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                <Setter Property="Background" Value="#047857"/>
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+                    
+                    <Button Content="Додати стовпець" 
+                            Background="White" 
+                            Foreground="#1f2937" 
+                            FontSize="16"
+                            BorderBrush="#1f2937"
+                            BorderThickness="1"
+                            Width="165"
+                            Height="45"
+                            CornerRadius="8"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Click="AddColumn_Click">
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover">
+                                <Setter Property="Background" Value="#047857"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="BorderBrush" Value="#047857"/>
+                            </Style>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                <Setter Property="Background" Value="#047857"/>
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+                    
+                    <Button Content="Видалити стовпець" 
+                            Background="White" 
+                            Foreground="#1f2937" 
+                            FontSize="16"
+                            BorderBrush="#1f2937"
+                            BorderThickness="1"
+                            Width="170"
+                            Height="45"
+                            CornerRadius="8"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Click="DeleteColumn_Click">
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover">
+                                <Setter Property="Background" Value="#047857"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="BorderBrush" Value="#047857"/>
+                            </Style>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                <Setter Property="Background" Value="#047857"/>
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+                    
+
+                <Button Content="Обчислити" 
+                        Background="White" 
+                        Foreground="#1f2937" 
+                        FontSize="16"
+                        BorderBrush="#1f2937"
+                        BorderThickness="1"
+                            Width="165"
+                            Height="45"
+                            CornerRadius="8"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Click="Calculate_Click">
+                    <Button.Styles>
+                            <Style Selector="Button:pointerover">
+                                <Setter Property="Background" Value="#047857"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="BorderBrush" Value="#047857"/>
+                            </Style>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                <Setter Property="Background" Value="#047857"/>
+                            </Style>
+                    </Button.Styles>
+                </Button>
+                   
+                    
+                <Button Content="Зберегти" 
+                        Width="165"
+                        Height="45"
+                        Background="White" 
+                        Foreground="#1f2937" 
+                        FontSize="16"
+                        BorderBrush="#1f2937"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Click="Save_Click">
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover">
+                                <Setter Property="Background" Value="#047857"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="BorderBrush" Value="#047857"/>
+                            </Style>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                <Setter Property="Background" Value="#047857"/>
+                            </Style>
+                    </Button.Styles>
+                </Button>
+                
+                <Button Content="Видалити" 
+                        Width="165"
+                        Height="45"
+                        Background="White" 
+                        Foreground="#1f2937" 
+                        FontSize="16"
+                        BorderBrush="#1f2937"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Click="DeleteTable_Click">
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover /template/ ContentPresenter">
+                            <Setter Property="Background" Value="#dc2626"/>
+                        </Style>
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="Background" Value="#dc2626"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="BorderBrush" Value="#dc2626"/>
+                        </Style>
+                    </Button.Styles>
+                </Button>
+<!--                  <Button Content="Очистити" 
+                            Background="White" 
+                            Foreground="#1f2937" 
+                            FontSize="16"
+                            BorderBrush="#1f2937"
+                            BorderThickness="1"
+                            Width="150"
+                            Height="45"
+                            CornerRadius="8"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Click="Clear_Click">
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                            <Setter Property="Background" Value="#dc2626"/>
+                        </Style>
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="Background" Value="#dc2626"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="BorderBrush" Value="#dc2626"/>
+                        </Style>
+                        </Button.Styles>
+                    </Button> -->
         </StackPanel>
 
-        <StackPanel Grid.Row="1" 
+        <StackPanel x:Name="ModePanel"
                    Orientation="Horizontal" 
-                   HorizontalAlignment="Center" 
-                   Margin="20">
-            <TextBlock Text="Рядки:" 
-                      Foreground="#1f2937" 
-                      VerticalAlignment="Center"
-                      Margin="0,0,10,0"/>
-            <TextBox x:Name="RowsBox" 
-                    Width="60" 
-                    Text="5"
-                    Margin="0,0,20,0"/>
-            <TextBlock Text="Стовпці:" 
-                      Foreground="#1f2937" 
-                      VerticalAlignment="Center"
-                      Margin="0,0,10,0"/>
-            <TextBox x:Name="ColsBox" 
-                    Width="60" 
-                    Text="5"
-                    Margin="0,0,20,0"/>
-            <Button Content="Створити таблицю"
-                    Background="#047857"
-                    Foreground="White"
-                    FontWeight="SemiBold"
-                    Width="180"
-                    Click="CreateTable_Click">
+                   HorizontalAlignment="Left" 
+                   Spacing="12"
+                   IsVisible="False">
+            <Button x:Name="ShowExpressionsButton"
+                    Content="Показати вирази" 
+                    Classes="mode-inactive"
+                    FontSize="16"
+                    BorderBrush="#1f2937"
+                    BorderThickness="1"
+                    Width="170"
+                    Height="45"
+                    CornerRadius="8"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Click="ShowExpressions_Click">
                 <Button.Styles>
                     <Style Selector="Button:pointerover /template/ ContentPresenter">
                         <Setter Property="Background" Value="#047857"/>
                     </Style>
+                    <Style Selector="Button:pointerover">
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="BorderBrush" Value="#047857"/>
+                    </Style>
                 </Button.Styles>
             </Button>
-            <CheckBox x:Name="ShowFormulas"
-                      Content="Показувати формули замість значень"
-                      Foreground="#1f2937"
-                      Margin="20,0,0,0">
-   
-                <!-- <CheckBox.Styles>
-                    <Style Selector="CheckBox:pointerover /template/ Border#NormalRectangle">
-                        <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="BorderBrush" Value="#9ca3af"/>
+            
+            <Button x:Name="ShowValuesButton"
+                    Content="Показати значення" 
+                    Classes="mode-active"
+                    FontSize="16"
+                    BorderBrush="#1f2937"
+                    BorderThickness="1"
+                    Width="170"
+                    Height="45"
+                    CornerRadius="8"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Click="ShowValues_Click">
+                <Button.Styles>
+                    <Style Selector="Button:pointerover /template/ ContentPresenter">
+                        <Setter Property="Background" Value="#047857"/>
                     </Style>
-                </CheckBox.Styles> -->
-            </CheckBox>
+                    <Style Selector="Button:pointerover">
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="BorderBrush" Value="#047857"/>
+                    </Style>
+                </Button.Styles>
+            </Button>
         </StackPanel>
+        
+    </StackPanel>
+    </ScrollViewer>
+</Border>
 
         <Border Grid.Row="2" 
                 Background="#f9fafb" 
@@ -107,18 +471,17 @@
                 Margin="20"
                 Padding="20">
             <ScrollViewer HorizontalScrollBarVisibility="Auto" 
-                         VerticalScrollBarVisibility="Auto">
+                        VerticalScrollBarVisibility="Auto">
                 <StackPanel>
-
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
-                        <Border Width="50" 
-                               Height="35"
-                               Margin="0,0,10,2"
-                               Background="#d1d5db"
-                               BorderBrush="#9ca3af"
-                               BorderThickness="1"
-                               CornerRadius="3"/>
-                        
+                    <StackPanel Orientation="Horizontal">
+                        <Border Width="70" 
+                            Height="45" 
+                            Margin="0,0,10,2" 
+                            Background="Transparent" 
+                            BorderBrush="Transparent" 
+                            BorderThickness="0" 
+                            CornerRadius="3"/>
+                            
                         <ItemsControl ItemsSource="{Binding ColumnHeaders}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -127,70 +490,44 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                     <Border Width="106" 
-                                           Height="35"
-                                           Margin="0,0,0,2"
-                                           Background="#d1d5db"
-                                           BorderBrush="#9ca3af"
-                                           BorderThickness="1"
-                                           CornerRadius="3"
-                                           Padding="5">
+                                    <Border Width="140" 
+                                        Height="45" 
+                                        Margin="0,0,0,2" 
+                                        Background="#047857" 
+                                        BorderBrush="#047857" 
+                                        BorderThickness="1" 
+                                        CornerRadius="3" 
+                                        Padding="5">
                                         <TextBlock Text="{Binding}" 
-                                                  Foreground="#1f2937"
-                                                  FontWeight="Bold"
-                                                  TextAlignment="Center"
-                                                  VerticalAlignment="Center"/>
+                                                Foreground="White" 
+                                                FontWeight="Bold"
+                                                FontSize="16"
+                                                TextAlignment="Center" 
+                                                VerticalAlignment="Center"/>
                                     </Border>
-                                    <!-- <Border BorderBrush="#d1d5db" 
-       BorderThickness="1" 
-       Width="106"
-       Height="35"
-       Margin="0,0,0,2"
-       Background="White"
-       CornerRadius="3">
-    <TextBox Text="{Binding Value, Mode=TwoWay}" 
-            Background="Transparent"
-            Foreground="#1f2937"
-            BorderThickness="0"
-            VerticalAlignment="Center"
-            Padding="5,0"
-            LostFocus="Cell_LostFocus"
-            Tag="{Binding}">
-        <TextBox.Styles>
-            <Style Selector="TextBox:pointerover /template/ Border">
-                <Setter Property="Background" Value="#ECFDF5"/>
-            </Style>
-            <Style Selector="TextBox:focus /template/ Border">
-                <Setter Property="Background" Value="#D1FAE5"/>
-                <Setter Property="BorderBrush" Value="#047857"/>
-                <Setter Property="BorderThickness" Value="2"/>
-            </Style>
-        </TextBox.Styles>
-    </TextBox>
-</Border> -->
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </StackPanel>
-            
+                    
                     <ItemsControl ItemsSource="{Binding TableRows}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
-                                
-                                    <Border Width="50" 
-                                           Height="35"
-                                           Margin="0,0,10,2"
-                                           Background="#d1d5db"
-                                           BorderBrush="#9ca3af"
-                                           BorderThickness="1"
-                                           CornerRadius="3"
-                                           Padding="5">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Width="70" 
+                                        Height="45" 
+                                        Margin="0,0,10,2" 
+                                        Background="#047857" 
+                                        BorderBrush="#047857" 
+                                        BorderThickness="1" 
+                                        CornerRadius="3" 
+                                        Padding="5">
                                         <TextBlock Text="{Binding RowNumber}" 
-                                                  Foreground="#1f2937"
-                                                  FontWeight="Bold"
-                                                  TextAlignment="Center"
-                                                  VerticalAlignment="Center"/>
+                                                Foreground="White" 
+                                                FontWeight="Bold"
+                                                FontSize="16"
+                                                TextAlignment="Center" 
+                                                VerticalAlignment="Center"/>
                                     </Border>
                                     
                                     <ItemsControl ItemsSource="{Binding Cells}">
@@ -201,27 +538,34 @@
                                         </ItemsControl.ItemsPanel>
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <Border BorderBrush="#d1d5db" 
-                                                       BorderThickness="1" 
-                                                       Width="106"
-                                                       Height="35"
-                                                       Margin="0,0,0,2"
-                                                       Background="White"
-                                                       CornerRadius="3">
-                                                    <TextBox Text="{Binding Value, Mode=TwoWay}" 
-                                                            Background="Transparent"
+                                             <Border BorderBrush="#d1d5db" 
+                                                    BorderThickness="1" 
+                                                    Width="140" 
+                                                    Height="45" 
+                                                    Margin="0" 
+                                                    Background="White" 
+                                                    CornerRadius="0">
+                                                    <TextBox Text="{Binding DisplayText, Mode=TwoWay}" 
+                                                            Background="Transparent" 
                                                             Foreground="#1f2937"
-                                                            BorderThickness="0"
-                                                            VerticalAlignment="Center"
-                                                            Padding="5,0">
+                                                            FontSize="15"
+                                                            BorderThickness="0" 
+                                                            VerticalAlignment="Stretch"
+                                                            HorizontalAlignment="Stretch"
+                                                            Padding="8,0"
+                                                            VerticalContentAlignment="Center"
+                                                            GotFocus="Cell_GotFocus"
+                                                            LostFocus="Cell_LostFocus" 
+                                                            Tag="{Binding}">
                                                         <TextBox.Styles>
                                                             <Style Selector="TextBox:pointerover /template/ Border">
                                                                 <Setter Property="Background" Value="#ECFDF5"/>
+                                                                <Setter Property="BorderThickness" Value="0"/>
                                                             </Style>
                                                             <Style Selector="TextBox:focus /template/ Border">
                                                                 <Setter Property="Background" Value="#D1FAE5"/>
                                                                 <Setter Property="BorderBrush" Value="#047857"/>
-                                                                <Setter Property="BorderThickness" Value="2"/>
+                                                                <Setter Property="BorderThickness" Value="3"/>
                                                             </Style>
                                                         </TextBox.Styles>
                                                     </TextBox>
