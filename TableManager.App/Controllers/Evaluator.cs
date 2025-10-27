@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -83,10 +82,15 @@ namespace TableManager.App.Controllers
                     if (!left.Success) return left;
                     if (!right.Success) return right;
                     
-                    if (left.Type != ValueType.Number || right.Type != ValueType.Number)
+                    // Конвертуємо булеві в числа
+                    double leftValue = left.Type == ValueType.Boolean ? (left.BoolValue ? 1.0 : 0.0) : left.NumberValue;
+                    double rightValue = right.Type == ValueType.Boolean ? (right.BoolValue ? 1.0 : 0.0) : right.NumberValue;
+                    
+                    // Перевірка на змішування типів - обидва мають бути або числа, або булеві
+                    if ((left.Type == ValueType.Boolean) != (right.Type == ValueType.Boolean))
                         return new EvaluationResult { Success = false, Type = ValueType.Error, Error = "#ERROR" };
                     
-                    return new EvaluationResult { Success = true, Type = ValueType.Boolean, BoolValue = left.NumberValue >= right.NumberValue };
+                    return new EvaluationResult { Success = true, Type = ValueType.Boolean, BoolValue = leftValue >= rightValue };
                 }
             }
             
@@ -101,10 +105,13 @@ namespace TableManager.App.Controllers
                     if (!left.Success) return left;
                     if (!right.Success) return right;
                     
-                    if (left.Type != ValueType.Number || right.Type != ValueType.Number)
+                    double leftValue = left.Type == ValueType.Boolean ? (left.BoolValue ? 1.0 : 0.0) : left.NumberValue;
+                    double rightValue = right.Type == ValueType.Boolean ? (right.BoolValue ? 1.0 : 0.0) : right.NumberValue;
+                    
+                    if ((left.Type == ValueType.Boolean) != (right.Type == ValueType.Boolean))
                         return new EvaluationResult { Success = false, Type = ValueType.Error, Error = "#ERROR" };
                     
-                    return new EvaluationResult { Success = true, Type = ValueType.Boolean, BoolValue = left.NumberValue <= right.NumberValue };
+                    return new EvaluationResult { Success = true, Type = ValueType.Boolean, BoolValue = leftValue <= rightValue };
                 }
             }
             
@@ -119,10 +126,13 @@ namespace TableManager.App.Controllers
                     if (!left.Success) return left;
                     if (!right.Success) return right;
                     
-                    if (left.Type != ValueType.Number || right.Type != ValueType.Number)
+                    double leftValue = left.Type == ValueType.Boolean ? (left.BoolValue ? 1.0 : 0.0) : left.NumberValue;
+                    double rightValue = right.Type == ValueType.Boolean ? (right.BoolValue ? 1.0 : 0.0) : right.NumberValue;
+                    
+                    if ((left.Type == ValueType.Boolean) != (right.Type == ValueType.Boolean))
                         return new EvaluationResult { Success = false, Type = ValueType.Error, Error = "#ERROR" };
                     
-                    return new EvaluationResult { Success = true, Type = ValueType.Boolean, BoolValue = Math.Abs(left.NumberValue - right.NumberValue) > 0.0001 };
+                    return new EvaluationResult { Success = true, Type = ValueType.Boolean, BoolValue = Math.Abs(leftValue - rightValue) > 0.0001 };
                 }
             }
             
@@ -137,10 +147,13 @@ namespace TableManager.App.Controllers
                     if (!left.Success) return left;
                     if (!right.Success) return right;
                     
-                    if (left.Type != ValueType.Number || right.Type != ValueType.Number)
+                    double leftValue = left.Type == ValueType.Boolean ? (left.BoolValue ? 1.0 : 0.0) : left.NumberValue;
+                    double rightValue = right.Type == ValueType.Boolean ? (right.BoolValue ? 1.0 : 0.0) : right.NumberValue;
+                    
+                    if ((left.Type == ValueType.Boolean) != (right.Type == ValueType.Boolean))
                         return new EvaluationResult { Success = false, Type = ValueType.Error, Error = "#ERROR" };
                     
-                    return new EvaluationResult { Success = true, Type = ValueType.Boolean, BoolValue = left.NumberValue > right.NumberValue };
+                    return new EvaluationResult { Success = true, Type = ValueType.Boolean, BoolValue = leftValue > rightValue };
                 }
             }
             
@@ -155,10 +168,13 @@ namespace TableManager.App.Controllers
                     if (!left.Success) return left;
                     if (!right.Success) return right;
                     
-                    if (left.Type != ValueType.Number || right.Type != ValueType.Number)
+                    double leftValue = left.Type == ValueType.Boolean ? (left.BoolValue ? 1.0 : 0.0) : left.NumberValue;
+                    double rightValue = right.Type == ValueType.Boolean ? (right.BoolValue ? 1.0 : 0.0) : right.NumberValue;
+                    
+                    if ((left.Type == ValueType.Boolean) != (right.Type == ValueType.Boolean))
                         return new EvaluationResult { Success = false, Type = ValueType.Error, Error = "#ERROR" };
                     
-                    return new EvaluationResult { Success = true, Type = ValueType.Boolean, BoolValue = left.NumberValue < right.NumberValue };
+                    return new EvaluationResult { Success = true, Type = ValueType.Boolean, BoolValue = leftValue < rightValue };
                 }
             }
             
@@ -173,10 +189,13 @@ namespace TableManager.App.Controllers
                     if (!left.Success) return left;
                     if (!right.Success) return right;
                     
-                    if (left.Type != ValueType.Number || right.Type != ValueType.Number)
+                    double leftValue = left.Type == ValueType.Boolean ? (left.BoolValue ? 1.0 : 0.0) : left.NumberValue;
+                    double rightValue = right.Type == ValueType.Boolean ? (right.BoolValue ? 1.0 : 0.0) : right.NumberValue;
+                    
+                    if ((left.Type == ValueType.Boolean) != (right.Type == ValueType.Boolean))
                         return new EvaluationResult { Success = false, Type = ValueType.Error, Error = "#ERROR" };
                     
-                    return new EvaluationResult { Success = true, Type = ValueType.Boolean, BoolValue = Math.Abs(left.NumberValue - right.NumberValue) < 0.0001 };
+                    return new EvaluationResult { Success = true, Type = ValueType.Boolean, BoolValue = Math.Abs(leftValue - rightValue) < 0.0001 };
                 }
             }
 
@@ -185,34 +204,26 @@ namespace TableManager.App.Controllers
 
         private static EvaluationResult EvaluateArithmetic(string expr, Dictionary<string, string> cellValues)
         {
-            if (expr.StartsWith("inc("))
+            if (expr.StartsWith("inc(") && expr.EndsWith(")"))
             {
-                int closingParen = FindMatchingParen(expr, 3);
-                if (closingParen == expr.Length - 1)
-                {
-                    string inner = expr.Substring(4, closingParen - 4).Trim();
-                    var result = EvaluateArithmetic(inner, cellValues);
-                    if (!result.Success) return result;
-                    if (result.Type != ValueType.Number)
-                        return new EvaluationResult { Success = false, Type = ValueType.Error, Error = "#ERROR" };
-                    
-                    return new EvaluationResult { Success = true, Type = ValueType.Number, NumberValue = result.NumberValue + 1 };
-                }
+                string inner = expr.Substring(4, expr.Length - 5).Trim();
+                var result = EvaluateArithmetic(inner, cellValues);
+                if (!result.Success) return result;
+                if (result.Type != ValueType.Number)
+                    return new EvaluationResult { Success = false, Type = ValueType.Error, Error = "#ERROR" };
+                
+                return new EvaluationResult { Success = true, Type = ValueType.Number, NumberValue = result.NumberValue + 1 };
             }
             
-            if (expr.StartsWith("dec("))
+            if (expr.StartsWith("dec(") && expr.EndsWith(")"))
             {
-                int closingParen = FindMatchingParen(expr, 3);
-                if (closingParen == expr.Length - 1)
-                {
-                    string inner = expr.Substring(4, closingParen - 4).Trim();
-                    var result = EvaluateArithmetic(inner, cellValues);
-                    if (!result.Success) return result;
-                    if (result.Type != ValueType.Number)
-                        return new EvaluationResult { Success = false, Type = ValueType.Error, Error = "#ERROR" };
-                    
-                    return new EvaluationResult { Success = true, Type = ValueType.Number, NumberValue = result.NumberValue - 1 };
-                }
+                string inner = expr.Substring(4, expr.Length - 5).Trim();
+                var result = EvaluateArithmetic(inner, cellValues);
+                if (!result.Success) return result;
+                if (result.Type != ValueType.Number)
+                    return new EvaluationResult { Success = false, Type = ValueType.Error, Error = "#ERROR" };
+                
+                return new EvaluationResult { Success = true, Type = ValueType.Number, NumberValue = result.NumberValue - 1 };
             }
 
             int parenLevel = 0;
@@ -329,18 +340,6 @@ namespace TableManager.App.Controllers
             }
 
             return new EvaluationResult { Success = false, Type = ValueType.Error, Error = "#ERROR" };
-        }
-
-        private static int FindMatchingParen(string expr, int openParenIndex)
-        {
-            int level = 1;
-            for (int i = openParenIndex + 1; i < expr.Length; i++)
-            {
-                if (expr[i] == '(') level++;
-                if (expr[i] == ')') level--;
-                if (level == 0) return i;
-            }
-            return -1;
         }
 
         public static bool DetectCycle(string cellName, Dictionary<string, string> allCells)
