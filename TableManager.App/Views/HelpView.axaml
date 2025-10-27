@@ -249,7 +249,7 @@ TableManager - це програма для роботи з електронни
                                    LineHeight="24">
 <Bold>#REF</Bold> - посилання на неіснуючу клітинку
 <LineBreak/>
-<Bold>#ERROR</Bold> - синтаксична помилка у формулі
+<Bold>#ERROR</Bold> - синтаксична помилка у формулі або змішування типів даних
 <LineBreak/>
 <Bold>#CYCLE</Bold> - циклічне посилання 
                         </TextBlock>
