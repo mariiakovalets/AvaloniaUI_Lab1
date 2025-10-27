@@ -257,6 +257,8 @@ namespace TableManager.App.Views
             TableRows.Clear();
             ColumnHeaders.Clear();
             _cellMap.Clear();
+            _changedCells.Clear(); 
+
 
             if (!string.IsNullOrEmpty(deletedFilePath))
             {
@@ -266,6 +268,7 @@ namespace TableManager.App.Views
             _mainWindow?.NavigateToMain();
         }
 
+        
         private void Cell_GotFocus(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             if (sender is TextBox textBox && textBox.Tag is CellViewModel cell)
@@ -278,14 +281,16 @@ namespace TableManager.App.Views
         {
             if (sender is TextBox textBox && textBox.Tag is CellViewModel cell)
             {
-                cell.IsFocused = false;
-
                 string newValue = textBox.Text ?? "";
+                
                 if (cell.Value != newValue)
                 {
                     cell.Value = newValue;
+                    cell.DisplayValue = ""; 
                     _changedCells.Add(cell.CellName);
                 }
+                
+                cell.IsFocused = false;
             }
         }
         private void Calculate_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
