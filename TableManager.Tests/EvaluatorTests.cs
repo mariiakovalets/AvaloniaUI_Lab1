@@ -5,7 +5,7 @@ using ValueType = TableManager.App.Controllers.ValueType;
 
 namespace TableManager.Tests
 {
-
+    [TestClass]
     public class EvaluatorTests
     {
         [TestMethod]
