@@ -226,20 +226,7 @@ namespace TableManager.App.Controllers
             headers.RemoveAt(headers.Count - 1);
         }
 
-        //  Очистити всі клітинки (колишній Clear_Click core)
-        /* public void ClearAll(ObservableCollection<RowViewModel> rows)
-        {
-            foreach (var row in rows)
-            {
-                foreach (var cell in row.Cells)
-                {
-                    cell.Value = "";
-                    cell.DisplayValue = "";
-                    cell.HasError = false;
-                    cell.ErrorMessage = "";
-                }
-            }
-        } */
+
 
         public void ForceShowExpressions(ObservableCollection<RowViewModel> rows)
         {

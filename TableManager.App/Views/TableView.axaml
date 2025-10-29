@@ -382,29 +382,6 @@
                         </Style>
                     </Button.Styles>
                 </Button>
-<!--                  <Button Content="Очистити" 
-                            Background="White" 
-                            Foreground="#1f2937" 
-                            FontSize="16"
-                            BorderBrush="#1f2937"
-                            BorderThickness="1"
-                            Width="150"
-                            Height="45"
-                            CornerRadius="8"
-                            HorizontalContentAlignment="Center"
-                            VerticalContentAlignment="Center"
-                            Click="Clear_Click">
-                        <Button.Styles>
-                            <Style Selector="Button:pointerover /template/ ContentPresenter">
-                            <Setter Property="Background" Value="#dc2626"/>
-                        </Style>
-                        <Style Selector="Button:pointerover">
-                            <Setter Property="Background" Value="#dc2626"/>
-                            <Setter Property="Foreground" Value="White"/>
-                            <Setter Property="BorderBrush" Value="#dc2626"/>
-                        </Style>
-                        </Button.Styles>
-                    </Button> -->
         </StackPanel>
 
         <StackPanel x:Name="ModePanel"
@@ -418,7 +395,7 @@
                     FontSize="16"
                     BorderBrush="#1f2937"
                     BorderThickness="1"
-                    Width="170"
+                    Width="165"
                     Height="45"
                     CornerRadius="8"
                     HorizontalContentAlignment="Center"
@@ -441,7 +418,7 @@
                     FontSize="16"
                     BorderBrush="#1f2937"
                     BorderThickness="1"
-                    Width="170"
+                    Width="165"
                     Height="45"
                     CornerRadius="8"
                     HorizontalContentAlignment="Center"
